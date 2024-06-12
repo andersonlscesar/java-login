@@ -1,14 +1,10 @@
 package controller;
 
-import jakarta.jms.Message;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import java.io.IOException;
 import model.DAO.UsuarioDAO;
@@ -24,7 +20,6 @@ public class Login extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getServletPath();
-        System.out.println(path);
 
         switch (path) {
             case "/cadastro":
@@ -49,37 +44,35 @@ public class Login extends HttpServlet {
 
     protected void insert(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-
         String nome         = request.getParameter("name");
         String email        = request.getParameter("email");
         String senha        = request.getParameter("password");
         String senhaConfirm = request.getParameter("password_confirmation");
 
-
         ArrayList<String> errors = new ArrayList<>();
 
-//        if (nome == null || nome.trim().isEmpty()) {
-//            errors.add("O nome é obrigatório");
-//        } else if (email == null || email.trim().isEmpty()) {
-//            errors.add("O email é obrigatório");
-//        } else if (senha == null || senha.trim().isEmpty()) {
-//            errors.add("Informe uma senha");
-//        } else if (senhaConfirm == null || senhaConfirm.trim().isEmpty()) {
-//            errors.add("Confirme sua senha");
-//        } else if (!senha.equals(senhaConfirm)) {
-//            errors.add("As senhas não coincidem");
-//        }
-//
-//        if (!errors.isEmpty()) {
-//            request.setAttribute("errors", errors);
-//            request.getRequestDispatcher("subscribe.jsp").forward(request, response);
-//        } else {
-//            usuarioEntity.setNome(nome);
-//            usuarioEntity.setEmail(email);
-//
-//            usuarioDAO.insert();
-//            response.sendRedirect("index.jsp");
-//        }
+        if (nome == null || nome.trim().isEmpty()) {
+            errors.add("O nome é obrigatório");
+        } else if (email == null || email.trim().isEmpty()) {
+            errors.add("O email é obrigatório");
+        } else if (senha == null || senha.trim().isEmpty()) {
+            errors.add("Informe uma senha");
+        } else if (senhaConfirm == null || senhaConfirm.trim().isEmpty()) {
+            errors.add("Confirme sua senha");
+        } else if (!senha.equals(senhaConfirm)) {
+            errors.add("As senhas não coincidem");
+        }
+
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.getRequestDispatcher("subscribe.jsp").forward(request, response);
+        } else {
+            usuarioEntity.setNome(nome);
+            usuarioEntity.setEmail(email);
+            usuarioEntity.setSenha(senha);
+            usuarioDAO.insert(usuarioEntity);
+            response.sendRedirect("index.jsp");
+        }
 
     }
 
