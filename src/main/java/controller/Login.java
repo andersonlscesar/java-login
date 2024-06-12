@@ -4,11 +4,14 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import java.io.IOException;
 import model.DAO.UsuarioDAO;
 import model.entities.Usuario;
+
+import util.Encryptor;
 
 @WebServlet(name = "Login", urlPatterns={ "/cadastro", "/login", "/novo-usuario" })
 
@@ -37,17 +40,23 @@ public class Login extends HttpServlet {
 
         switch (path) {
             case "/novo-usuario":
-                insert(request, response);
+                try {
+                    insert(request, response);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
         }
     }
 
-    protected void insert(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void insert(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, NoSuchAlgorithmException {
 
         String nome         = request.getParameter("name");
         String email        = request.getParameter("email");
         String senha        = request.getParameter("password");
         String senhaConfirm = request.getParameter("password_confirmation");
+
+        Encryptor encryptor = new Encryptor();
 
         ArrayList<String> errors = new ArrayList<>();
 
@@ -67,11 +76,13 @@ public class Login extends HttpServlet {
             request.setAttribute("errors", errors);
             request.getRequestDispatcher("subscribe.jsp").forward(request, response);
         } else {
+
             usuarioEntity.setNome(nome);
             usuarioEntity.setEmail(email);
-            usuarioEntity.setSenha(senha);
+            usuarioEntity.setSenha(encryptor.encryptString(senha));
             usuarioDAO.insert(usuarioEntity);
             response.sendRedirect("index.jsp");
+
         }
 
     }
