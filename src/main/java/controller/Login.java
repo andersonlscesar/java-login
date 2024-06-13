@@ -13,11 +13,9 @@ import model.entities.Usuario;
 
 import util.Encryptor;
 
-@WebServlet(name = "Login", urlPatterns={ "/cadastro", "/login", "/novo-usuario" })
+@WebServlet(name = "Login", urlPatterns={ "/cadastro", "/login", "/novo-usuario", "/home" })
 
 public class Login extends HttpServlet {
-
-    UsuarioDAO usuarioDAO = new UsuarioDAO();
     Usuario usuarioEntity = new Usuario();
 
     @Override
@@ -46,11 +44,37 @@ public class Login extends HttpServlet {
                     throw new RuntimeException(e);
                 }
                 break;
+            case "/home":
+                signIn(request, response);
+                break;
         }
     }
 
-    protected void insert(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, NoSuchAlgorithmException {
+    protected void signIn(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        String email = request.getParameter("email");
+        String senha = request.getParameter("password");
+        Usuario usuario = usuarioDAO.getUserByEmail(email);
 
+        ArrayList<String> errors = new ArrayList<>();
+
+        if (email == null || email.trim().isEmpty()) {
+            errors.add("Informe o email");
+        }else if (senha == null || senha.trim().isEmpty()) {
+            errors.add("informe a senha");
+        }else if (usuario == null) {
+            errors.add("Email não encontrado");
+        }
+
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+        }
+
+    }
+
+    protected void insert(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, NoSuchAlgorithmException {
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
         String nome         = request.getParameter("name");
         String email        = request.getParameter("email");
         String senha        = request.getParameter("password");

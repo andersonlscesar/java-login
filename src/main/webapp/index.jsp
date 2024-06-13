@@ -1,4 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.ArrayList"%>
+<%
+    ArrayList<String> errors = (ArrayList<String>) request.getAttribute("errors");
+    String email = request.getParameter("email");
+%>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -14,10 +19,23 @@
                 Acesse sua conta
             </div>
             <div class="card-body">
-                <form>
+
+            <%--VERIFICANDO SE EXISTEM ERROS PARA SEREM EXIBIDOS--%>
+
+                <% if (errors != null) {%>
+                <div class="alert alert-danger">
+                    <% for(String error: errors) {%>
+                        <%= error %>
+                    <%}%>
+                </div>
+                <%}%>
+
+            <%--VERIFICANDO SE EXISTEM ERROS PARA SEREM EXIBIDOS--%>
+
+                <form action="home" method="POST">
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" name="email" class="form-control" id="email">
+                        <input type="email" name="email" class="form-control" id="email" value="<%= email != null ? email : "" %>">
                     </div>
                     <div class="form-group">
                         <label for="password">Senha</label>
@@ -27,7 +45,6 @@
                         <button type="submit" class="btn btn-primary mt-2">Entrar</button>
                         <a href="cadastro">Cadastre-se</a>
                     </div>
-
                 </form>
             </div>
         </div>
