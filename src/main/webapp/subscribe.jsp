@@ -1,6 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.ArrayList"%>
-<% ArrayList<String> errors  = (ArrayList<String>) request.getAttribute("errors");%>
+<%
+  ArrayList<String> errors  = (ArrayList<String>) request.getAttribute("errors");
+  String nome = request.getParameter("name");
+  String email = request.getParameter("email");
+%>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -31,12 +36,12 @@
 
         <div class="form-group">
           <label for="name">Nome</label>
-          <input type="text" name="name" class="form-control" id="name">
+          <input type="text" name="name" class="form-control" id="name" value="<%= nome != null ? nome : ""%>">
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" name="email" class="form-control" id="email">
+          <input type="email" name="email" class="form-control" id="email" value="<%= email != null ? email : ""%>">
         </div>
 
         <div class="form-group">

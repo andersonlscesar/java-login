@@ -94,13 +94,14 @@ public class Login extends HttpServlet {
             errors.add("Confirme sua senha");
         } else if (!senha.equals(senhaConfirm)) {
             errors.add("As senhas não coincidem");
+        } else if (usuarioDAO.getUserByEmail(email) !=null) {
+            errors.add("Este email já está em uso");
         }
 
         if (!errors.isEmpty()) {
             request.setAttribute("errors", errors);
             request.getRequestDispatcher("subscribe.jsp").forward(request, response);
         } else {
-
             usuarioEntity.setNome(nome);
             usuarioEntity.setEmail(email);
             usuarioEntity.setSenha(encryptor.encryptString(senha));
