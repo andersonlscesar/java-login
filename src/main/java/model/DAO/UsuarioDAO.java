@@ -2,23 +2,29 @@ package model.DAO;
 
 import model.DBConnection;
 import model.entities.Usuario;
+
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import util.Encryptor;
 
 
+/**
+ * The type Usuario dao.
+ */
 public class UsuarioDAO {
 
     private Connection conn;
-
-    public UsuarioDAO() {
-        this.conn = DBConnection.getConnection();
-    }
-
+    /**
+     * Insert.
+     *
+     * @param usuario the usuario
+     */
     public void insert(Usuario usuario) {
         String query = "INSERT INTO usuarios(nome, email, senha) VALUES (?, ?, ?)";
-
         try {
+            this.conn = DBConnection.getConnection();
             PreparedStatement pst = this.conn.prepareStatement(query);
             pst.setString(1, usuario.getNome());
             pst.setString(2, usuario.getEmail());
@@ -30,11 +36,18 @@ public class UsuarioDAO {
         }
     }
 
+    /**
+     * Gets user by email.
+     *
+     * @param email the email
+     * @return the user by email
+     */
     public Usuario getUserByEmail(String email) {
         String query = "SELECT * FROM usuarios WHERE email = ?";
         Usuario usuarioEntity = null;
 
         try {
+            this.conn = DBConnection.getConnection();
             usuarioEntity = new Usuario();
             PreparedStatement pst = this.conn.prepareStatement(query);
             pst.setString(1, email);
@@ -61,4 +74,5 @@ public class UsuarioDAO {
         }
         return usuarioEntity;
     }
+
 }

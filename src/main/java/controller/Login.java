@@ -4,14 +4,13 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import java.io.IOException;
 import model.DAO.UsuarioDAO;
 import model.entities.Usuario;
 
-import util.Encryptor;
+import  util.Encryptor;
 
 @WebServlet(name = "Login", urlPatterns={ "/cadastro", "/login", "/novo-usuario", "/home" })
 
@@ -38,14 +37,10 @@ public class Login extends HttpServlet {
 
         switch (path) {
             case "/novo-usuario":
-                try {
                     insert(request, response);
-                } catch (NoSuchAlgorithmException e) {
-                    throw new RuntimeException(e);
-                }
                 break;
             case "/home":
-                signIn(request, response);
+                    signIn(request, response);
                 break;
         }
     }
@@ -60,27 +55,31 @@ public class Login extends HttpServlet {
 
         if (email == null || email.trim().isEmpty()) {
             errors.add("Informe o email");
-        }else if (senha == null || senha.trim().isEmpty()) {
-            errors.add("informe a senha");
-        }else if (usuario == null) {
-            errors.add("Email não encontrado");
+        } else if (senha == null || senha.trim().isEmpty()) {
+            errors.add("Informe a senha");
+        } else if (usuario == null) {
+            errors.add("Email não cadastrado");
+        } else if (!Encryptor.checkPassword(senha, usuario.getSenha())) {
+            errors.add("Senha incorreta");
         }
 
         if (!errors.isEmpty()) {
             request.setAttribute("errors", errors);
-            request.getRequestDispatcher("index.jsp").forward(request, response);
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+        } else if (Encryptor.checkPassword(senha, usuario.getSenha())) {
+            HttpSession session = request.getSession();
+            session.setAttribute("usuario", usuario);
+            response.sendRedirect("home.jsp");
         }
-
     }
 
-    protected void insert(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, NoSuchAlgorithmException {
+    protected void insert(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UsuarioDAO usuarioDAO = new UsuarioDAO();
+
         String nome         = request.getParameter("name");
         String email        = request.getParameter("email");
         String senha        = request.getParameter("password");
         String senhaConfirm = request.getParameter("password_confirmation");
-
-        Encryptor encryptor = new Encryptor();
 
         ArrayList<String> errors = new ArrayList<>();
 
@@ -104,10 +103,9 @@ public class Login extends HttpServlet {
         } else {
             usuarioEntity.setNome(nome);
             usuarioEntity.setEmail(email);
-            usuarioEntity.setSenha(encryptor.encryptString(senha));
+            usuarioEntity.setSenha(Encryptor.encryptString(senha));
             usuarioDAO.insert(usuarioEntity);
             response.sendRedirect("index.jsp");
-
         }
 
     }

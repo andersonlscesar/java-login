@@ -1,15 +1,30 @@
 package util;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * The type Encryptor.
+ */
 public class Encryptor {
 
-    public String encryptString(String input) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] messageDigest = md.digest(input.getBytes());
-        BigInteger bigInt = new BigInteger(1, messageDigest);
-        return bigInt.toString(16);
+    /**
+     * Encrypt string string.
+     *
+     * @param plainText the plain text
+     * @return the string
+     */
+    public static String encryptString(String plainText) {
+        return BCrypt.hashpw(plainText, BCrypt.gensalt());
+    }
+
+    /**
+     * Check password boolean.
+     *
+     * @param plainText      the plain text
+     * @param hashedPassword the hashed password
+     * @return the boolean
+     */
+    public static boolean checkPassword(String plainText, String hashedPassword) {
+        return BCrypt.checkpw(plainText, hashedPassword);
     }
 }
