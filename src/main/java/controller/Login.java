@@ -12,7 +12,7 @@ import model.entities.Usuario;
 
 import  util.Encryptor;
 
-@WebServlet(name = "Login", urlPatterns={ "/cadastro", "/login", "/novo-usuario", "/home" })
+@WebServlet(name = "Login", urlPatterns={ "/cadastro", "/login", "/novo-usuario", "/home", "/logout" })
 
 public class Login extends HttpServlet {
     Usuario usuarioEntity = new Usuario();
@@ -42,7 +42,16 @@ public class Login extends HttpServlet {
             case "/home":
                     signIn(request, response);
                 break;
+            case "/logout":
+                logout(request, response);
+                break;
         }
+    }
+
+    protected void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        session.invalidate();
+        response.sendRedirect("index.jsp");
     }
 
     protected void signIn(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -107,7 +116,6 @@ public class Login extends HttpServlet {
             usuarioDAO.insert(usuarioEntity);
             response.sendRedirect("index.jsp");
         }
-
     }
 
     protected void subscribe(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
